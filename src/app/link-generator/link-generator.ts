@@ -52,12 +52,14 @@ export class LinkGenerator {
       return;
     }
 
+    this.copyButtonLabel = "Copied";
+
     try {
       await navigator.clipboard.writeText(this.generatedLink);
       this.copyMessage = "Link copied to clipboard.";
-      this.copyButtonLabel = "Copied";
       this.errorMessage = "";
     } catch {
+      this.copyButtonLabel = "Copy Link";
       this.errorMessage = "Unable to copy link automatically. Please copy it manually.";
     }
   }
