@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 version: 1
 frontend:
   phases:
@@ -14,3 +15,21 @@ frontend:
   cache:
     paths:
       - node_modules/**/*
+=======
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm ci
+    build:
+      commands:
+        - npm run build
+  artifacts:
+    baseDirectory: dist/project/browser
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+>>>>>>> fc9689998fa4f79b9923e067cde95172b848cb83
