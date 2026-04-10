@@ -1,0 +1,28 @@
+<div class="generator-page">
+  <div class="generator-card">
+    <h1>Feedback Link Generator</h1>
+    <p>Create a shareable feedback link for a specific receiver email.</p>
+
+    <label for="receiverEmail">Receiver Email</label>
+    <input
+      id="receiverEmail"
+      type="email"
+      [(ngModel)]="receiverEmail"
+      placeholder="manager@company.com"
+    />
+
+    <div class="actions">
+      <button type="button" (click)="generateLink()">Generate Link</button>
+      <a class="open-form" href="/feedback" target="_blank" rel="noopener">Open Feedback Form</a>
+    </div>
+
+    <div *ngIf="generatedLink" class="result">
+      <label for="generatedLink">Generated Link</label>
+      <textarea id="generatedLink" rows="3" readonly>{{ generatedLink }}</textarea>
+      <button type="button" class="copy-btn" (click)="copyLink()">{{ copyButtonLabel }}</button>
+    </div>
+
+    <p *ngIf="copyMessage" class="success-text">{{ copyMessage }}</p>
+    <p *ngIf="errorMessage" class="error-text">{{ errorMessage }}</p>
+  </div>
+</div>

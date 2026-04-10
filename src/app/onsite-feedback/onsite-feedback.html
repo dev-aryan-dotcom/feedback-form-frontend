@@ -1,0 +1,152 @@
+<div class="page-wrapper">
+  <div class="feedback-container">
+    <div class="header">
+      <h1>Client Feedback Form</h1>
+      <p>Structured client feedback for on-premises engagements.</p>
+      <div class="badge">Client premises review</div>
+    </div>
+
+    <form [formGroup]="feedbackForm" (ngSubmit)="onSubmit()">
+      <section class="section-block">
+        <div class="section-title">Participant & location</div>
+        <div class="row-2col">
+          <div class="form-group">
+            <label>Employee name <span class="required-star">*</span></label>
+            <input type="text" formControlName="devName" placeholder="e.g. Arjun Mehta">
+          </div>
+          <div class="form-group">
+            <label>Email address <span class="required-star">*</span></label>
+            <input type="email" formControlName="clientEmail" placeholder="your.email@example.com">
+            <span *ngIf="feedbackForm.get('clientEmail')?.hasError('required') && feedbackForm.get('clientEmail')?.touched" class="error-text">Email is required</span>
+            <span *ngIf="feedbackForm.get('clientEmail')?.hasError('email') && feedbackForm.get('clientEmail')?.touched" class="error-text">Enter a valid email</span>
+          </div>
+        </div>
+
+        <div class="row-2col">
+          <div class="form-group">
+            <label>Date of feedback <span class="required-star">*</span></label>
+            <input type="date" formControlName="feedbackDate">
+          </div>
+          <div class="form-group">
+            <label>Client location / site <span class="required-star">*</span></label>
+            <input type="text" formControlName="clientSite" placeholder="e.g. Downtown Office, NYC">
+          </div>
+        </div>
+
+        <div class="row-2col">
+          <div class="form-group">
+            <label>Role / designation <span class="required-star">*</span></label>
+            <select formControlName="role">
+              <option value="" disabled>Select role</option>
+              <option value="Java Fullstack Developer">Java Fullstack Developer</option>
+              <option value="SharePoint Developer">SharePoint Developer</option>
+              <option value="Lead Engineer">Lead Engineer</option>
+              <option value="Consultant">Consultant</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Review period <span class="required-star">*</span></label>
+            <select formControlName="period">
+              <option value="" disabled>-- Select period --</option>
+              <option value="Q1">Q1</option>
+              <option value="Q2">Q2</option>
+              <option value="Q3">Q3</option>
+              <option value="Q4">Q4</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-block">
+        <div class="section-title">Engagement ratings</div>
+        <div class="form-group">
+          <label>Overall performance at client location <span class="required-star">*</span></label>
+          <div class="rating-stars">
+            <div class="star-option" *ngFor="let star of [1,2,3,4,5]; let i = index">
+              <input type="radio" formControlName="overallRating" [value]="star" [id]="'star' + star">
+              <label [for]="'star' + star" class="star-label">★</label>
+              <span class="star-caption">
+                {{ star === 1 ? 'Poor' : star === 2 ? 'Fair' : star === 3 ? 'Good' : star === 4 ? 'Very Good' : 'Excellent' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="row-2col">
+          <div class="form-group">
+            <label>Collaboration & communication <span class="required-star">*</span></label>
+            <select formControlName="collabRating">
+              <option value="" disabled>-- Select rating --</option>
+              <option value="Excellent - proactive and clear">Excellent - proactive and clear</option>
+              <option value="Good - responsive and cooperative">Good - responsive and cooperative</option>
+              <option value="Average - meets expectations">Average - meets expectations</option>
+              <option value="Needs improvement">Needs improvement</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Delivery & timeline adherence <span class="required-star">*</span></label>
+            <select formControlName="deliveryRating">
+              <option value="" disabled>-- Select rating --</option>
+              <option value="Always on time, quality driven">Always on time, quality driven</option>
+              <option value="Mostly on track, minor delays">Mostly on track, minor delays</option>
+              <option value="Occasional delays, acceptable">Occasional delays, acceptable</option>
+              <option value="Frequent delays, concerns">Frequent delays, concerns</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Detailed ratings <span class="optional-badge">Optional</span> (1 = lowest, 5 = highest)</label>
+          <div class="rating-grid">
+            <div class="rating-item" *ngFor="let item of ratingItems">
+              <label>{{ item.label }}</label>
+              <select [formControlName]="item.control">
+                <option value="" disabled>-- Select rating --</option>
+                <option *ngFor="let value of ratingOptions" [value]="value">{{ value }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Technical competence <span class="optional-badge">Optional</span></label>
+          <div class="checkbox-group">
+            <label *ngFor="let tech of techOptions">
+              <input type="checkbox" [value]="tech.value" (change)="onTechChange($event)"> {{ tech.label }}
+            </label>
+          </div>
+        </div>
+
+        
+      </section>
+
+      <section class="section-block">
+        <div class="section-title">Summary feedback</div>
+        <div class="form-group">
+          <label>Additional comments <span class="optional-badge">Optional</span></label>
+          <textarea rows="4" formControlName="comments" placeholder="E.g., strong backend logic, effective client collaboration, clear documentation..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Improvement suggestions <span class="optional-badge">Optional</span></label>
+          <textarea rows="2" formControlName="improvements" placeholder="Constructive feedback for better alignment at the client site"></textarea>
+        </div>
+      </section>
+
+      <button type="submit" class="submit-btn" [ngClass]="{'submitted': isSubmitted}" [disabled]="isSubmitted || isSubmitting">
+        {{ isSubmitted ? 'Submitted' : (isSubmitting ? 'Submitting...' : 'Submit client feedback') }}
+      </button>
+
+      <div *ngIf="successMessage" class="success-message">
+        Thank you — your feedback form is being downloaded.
+      </div>
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+    </form>
+
+    <footer>
+      Client site feedback is for review purposes only and is not stored on this demo server.
+    </footer>
+  </div>
+</div>
