@@ -146,7 +146,7 @@ input.ng-invalid.ng-touched, select.ng-invalid.ng-touched {
 
 .rating-stars {
   display: flex;
-  justify-content: flex-starttart;
+  justify-content: flex-start;
   gap: 8px;
   padding: 6px 0;
 }
@@ -346,11 +346,82 @@ footer {
 }
 
 @media (max-width: 600px) {
-  form {
-    padding: 20px;
+  .page-wrapper {
+    padding: 12px;
+    align-items: flex-start;
   }
+
+  .feedback-container {
+    border-radius: 16px;
+  }
+
+  .header {
+    padding: 20px 18px;
+  }
+
+  .header h1 {
+    font-size: 1.5rem;
+    line-height: 1.25;
+  }
+
+  form {
+    padding: 18px;
+  }
+
+  .section-block {
+    padding: 16px;
+    border-radius: 14px;
+    margin-bottom: 16px;
+  }
+
+  .row-2col {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .row-2col .form-group {
+    min-width: 0;
+  }
+
+  .rating-grid {
+    grid-template-columns: 1fr;
+  }
+
   .rating-stars {
-    gap: 6px;
-    justify-content: space-between;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .star-option {
+    min-width: calc(20% - 4px);
+    flex: 1 1 calc(20% - 4px);
+  }
+
+  .star-label {
+    font-size: 28px;
+  }
+
+  .star-caption {
+    font-size: 0.68rem;
+    white-space: normal;
+  }
+
+  .checkbox-group {
+    grid-template-columns: 1fr;
+  }
+
+  input,
+  select,
+  textarea {
+    padding: 12px 14px;
+    font-size: 0.95rem;
+  }
+
+  .submit-btn {
+    min-height: 48px;
+  }
+
+  footer {
+    padding: 12px 18px 16px;
   }
 }

@@ -164,7 +164,43 @@ button,
 }
 
 @media (max-width: 640px) {
+  .generator-page {
+    padding: 14px;
+  }
+
   .generator-card {
-    padding: 22px;
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  h1 {
+    font-size: 1.45rem;
+    line-height: 1.25;
+  }
+
+  .actions,
+  .result-actions {
+    flex-direction: column;
+  }
+
+  button,
+  .open-form,
+  .open-link-btn,
+  .share-link-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .chip-input {
+    padding: 8px 10px;
+  }
+
+  .chip-list {
+    gap: 6px;
+  }
+
+  .chip {
+    width: 100%;
+    justify-content: space-between;
   }
 }
