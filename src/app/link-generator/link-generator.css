@@ -81,9 +81,19 @@ button,
   margin-top: 18px;
 }
 
-.copy-btn {
+.result-actions {
   margin-top: 10px;
-  background: #2b7a57;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.open-link-btn {
+  background: #345b96;
+}
+
+.share-link-btn {
+  background: #6d4aa2;
 }
 
 .success-text {

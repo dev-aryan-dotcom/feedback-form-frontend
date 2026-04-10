@@ -12,8 +12,7 @@ export class LinkGenerator {
   receiverEmail = "";
   generatedLink = "";
   errorMessage = "";
-  copyMessage = "";
-  copyButtonLabel = "Copy Link";
+  shareMessage = "";
 
   private isValidEmail(email: string): boolean {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -28,8 +27,7 @@ export class LinkGenerator {
 
   generateLink() {
     this.errorMessage = "";
-    this.copyMessage = "";
-    this.copyButtonLabel = "Copy Link";
+    this.shareMessage = "";
 
     const emailInput = this.receiverEmail.trim();
     const emails = this.parseReceiverEmails(emailInput);
@@ -53,23 +51,44 @@ export class LinkGenerator {
     this.generatedLink = `${origin}/feedback?receiver=${encodeURIComponent(emails.join(","))}`;
   }
 
-  async copyLink() {
-    this.copyMessage = "";
-
+  openGeneratedLink() {
     if (!this.generatedLink) {
-      this.errorMessage = "Generate a link before copying.";
+      this.errorMessage = "Generate a link before opening it.";
       return;
     }
 
-    this.copyButtonLabel = "Copied";
+    window.open(this.generatedLink, "_blank", "noopener,noreferrer");
+  }
+
+  async shareGeneratedLink() {
+    this.shareMessage = "";
+
+    if (!this.generatedLink) {
+      this.errorMessage = "Generate a link before sharing it.";
+      return;
+    }
+
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share({
+          title: "Client Feedback Form",
+          text: "Please use this link to submit feedback.",
+          url: this.generatedLink,
+        });
+        this.shareMessage = "Link shared successfully.";
+        this.errorMessage = "";
+        return;
+      } catch {
+        // Continue to clipboard fallback if sharing is cancelled or fails.
+      }
+    }
 
     try {
       await navigator.clipboard.writeText(this.generatedLink);
-      this.copyMessage = "Link copied to clipboard.";
+      this.shareMessage = "Sharing is not available here. Link copied to clipboard.";
       this.errorMessage = "";
     } catch {
-      this.copyButtonLabel = "Copy Link";
-      this.errorMessage = "Unable to copy link automatically. Please copy it manually.";
+      this.errorMessage = "Unable to share link automatically. Please copy it manually.";
     }
   }
 }

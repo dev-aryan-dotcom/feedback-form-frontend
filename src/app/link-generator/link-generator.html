@@ -19,10 +19,13 @@
     <div *ngIf="generatedLink" class="result">
       <label for="generatedLink">Generated Link</label>
       <textarea id="generatedLink" rows="3" readonly>{{ generatedLink }}</textarea>
-      <button type="button" class="copy-btn" (click)="copyLink()">{{ copyButtonLabel }}</button>
+      <div class="result-actions">
+        <button type="button" class="open-link-btn" (click)="openGeneratedLink()">Open Link</button>
+        <button type="button" class="share-link-btn" (click)="shareGeneratedLink()">Share Link</button>
+      </div>
     </div>
 
-    <p *ngIf="copyMessage" class="success-text">{{ copyMessage }}</p>
+    <p *ngIf="shareMessage" class="success-text">{{ shareMessage }}</p>
     <p *ngIf="errorMessage" class="error-text">{{ errorMessage }}</p>
   </div>
 </div>
