@@ -19,21 +19,30 @@ export class LinkGenerator {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
+  private parseReceiverEmails(input: string): string[] {
+    return input
+      .split(",")
+      .map((email) => email.trim())
+      .filter((email) => email.length > 0);
+  }
+
   generateLink() {
     this.errorMessage = "";
     this.copyMessage = "";
     this.copyButtonLabel = "Copy Link";
 
-    const email = this.receiverEmail.trim();
+    const emailInput = this.receiverEmail.trim();
+    const emails = this.parseReceiverEmails(emailInput);
 
-    if (!email) {
-      this.errorMessage = "Receiver email is required.";
+    if (!emails.length) {
+      this.errorMessage = "At least one receiver email is required.";
       this.generatedLink = "";
       return;
     }
 
-    if (!this.isValidEmail(email)) {
-      this.errorMessage = "Enter a valid receiver email.";
+    const invalidEmails = emails.filter((email) => !this.isValidEmail(email));
+    if (invalidEmails.length) {
+      this.errorMessage = `Invalid receiver email(s): ${invalidEmails.join(", ")}`;
       this.generatedLink = "";
       return;
     }
@@ -41,7 +50,7 @@ export class LinkGenerator {
     const origin =
       typeof window !== "undefined" ? window.location.origin : "http://localhost:4200";
 
-    this.generatedLink = `${origin}/feedback?receiver=${encodeURIComponent(email)}`;
+    this.generatedLink = `${origin}/feedback?receiver=${encodeURIComponent(emails.join(","))}`;
   }
 
   async copyLink() {

@@ -26,7 +26,7 @@ export class OnsiteFeedback {
   errorMessage = "";
   isSubmitted = false;
   isSubmitting = false;
-  receiverEmail: string = "";
+  receiverEmails: string[] = [];
 
   ratingOptions = [1, 2, 3, 4, 5];
 
@@ -59,7 +59,11 @@ export class OnsiteFeedback {
   ngOnInit(): void {
     // Get receiver email from URL
     this.route.queryParams.subscribe((params) => {
-      this.receiverEmail = params["receiver"] || "";
+      const receiverParam = params["receiver"] || "";
+      this.receiverEmails = String(receiverParam)
+        .split(",")
+        .map((email) => email.trim())
+        .filter((email) => email.length > 0);
     });
 
     const today = new Date().toISOString().split("T")[0];
@@ -112,7 +116,7 @@ export class OnsiteFeedback {
       return;
     }
 
-    if (!this.receiverEmail) {
+    if (!this.receiverEmails.length) {
       this.errorMessage = "⚠️ No receiver email configured. Contact admin.";
       return;
     }
@@ -123,7 +127,7 @@ export class OnsiteFeedback {
     const formData = this.feedbackForm.value;
 
     const payload = {
-      receiverEmail: this.receiverEmail,
+      receiverEmail: this.receiverEmails,
       clientEmail: formData.clientEmail,
       feedback: formData,
     };

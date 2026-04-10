@@ -1,14 +1,14 @@
 <div class="generator-page">
   <div class="generator-card">
     <h1>Client Feedback Form Link Generator</h1>
-    <p>Create a shareable feedback link for a specific receiver email.</p>
+    <p>Create a shareable feedback link for one or more receiver emails.</p>
 
-    <label for="receiverEmail">Receiver Email</label>
+    <label for="receiverEmail">Receiver Email(s)</label>
     <input
       id="receiverEmail"
       type="email"
       [(ngModel)]="receiverEmail"
-      placeholder="manager@company.com"
+      placeholder="manager@company.com, lead@company.com"
     />
 
     <div class="actions">
