@@ -134,6 +134,7 @@
       </section>
 
       <button type="submit" class="submit-btn" [ngClass]="{'submitted': isSubmitted}" [disabled]="isSubmitted || isSubmitting">
+        <span *ngIf="isSubmitting" class="btn-spinner" aria-hidden="true"></span>
         {{ isSubmitted ? 'Submitted' : (isSubmitting ? 'Submitting...' : 'Submit client feedback') }}
       </button>
 

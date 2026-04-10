@@ -149,7 +149,6 @@ export class OnsiteFeedback {
   }
 
   afterSuccess(formData: any) {
-    this.isSubmitting = false;
     this.successMessage = false;
     this.isSubmitted = false;
 
@@ -222,6 +221,7 @@ export class OnsiteFeedback {
     this.feedbackForm.reset({ feedbackDate: today });
 
     (this.feedbackForm.get("techCheckGroup") as FormArray).clear();
+    this.isSubmitting = false;
     this.feedbackForm.enable();
 
     setTimeout(() => {
