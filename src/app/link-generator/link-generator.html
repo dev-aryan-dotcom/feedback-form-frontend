@@ -3,14 +3,23 @@
     <h1>Client Feedback Form Link Generator</h1>
     <p>Create a shareable feedback link for one or more receiver emails.</p>
 
-    <label for="receiverEmail">Receiver Email(s)</label>
-    <input
-      #receiverEmailInput
-      id="receiverEmail"
-      type="email"
-      [(ngModel)]="receiverEmail"
-      placeholder="manager@company.com, lead@company.com"
-    />
+    <label>Receiver Email(s)</label>
+    <div class="chip-input">
+      <div class="chip-list" *ngIf="receiverEmails.length">
+        <span class="chip" *ngFor="let email of receiverEmails; let index = index">
+          <span class="chip-text">{{ email }}</span>
+          <button type="button" class="chip-remove" (click)="removeReceiverEmail(index)" aria-label="Remove receiver email">×</button>
+        </span>
+      </div>
+      <input
+        id="receiverEmail"
+        type="text"
+        [(ngModel)]="receiverInput"
+        (keydown)="onReceiverKeydown($event)"
+        (paste)="onReceiverPaste($event)"
+        placeholder="Type email and press Enter"
+      />
+    </div>
 
     <div class="actions">
       <button type="button" (click)="generateLink()" [disabled]="isGeneratingLink">

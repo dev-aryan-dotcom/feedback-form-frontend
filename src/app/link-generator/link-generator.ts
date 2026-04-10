@@ -11,7 +11,8 @@ import { environment } from "../../environments/environment";
   styleUrl: "./link-generator.css",
 })
 export class LinkGenerator {
-  receiverEmail = "";
+  receiverInput = "";
+  receiverEmails: string[] = [];
   generatedLink = "";
   errorMessage = "";
   shareMessage = "";
@@ -30,13 +31,24 @@ export class LinkGenerator {
       .filter((email) => email.length > 0);
   }
 
-  private getLatestReceiverInput(): string {
-    if (typeof document === "undefined") {
-      return "";
+  private addReceiverEmailsFromInput(): void {
+    const emails = this.parseReceiverEmails(this.receiverInput);
+
+    for (const email of emails) {
+      if (!this.isValidEmail(email)) {
+        continue;
+      }
+
+      if (!this.receiverEmails.includes(email)) {
+        this.receiverEmails.push(email);
+      }
     }
 
-    const input = document.getElementById("receiverEmail") as HTMLInputElement | null;
-    return input?.value?.trim() || "";
+    this.receiverInput = "";
+  }
+
+  removeReceiverEmail(index: number) {
+    this.receiverEmails.splice(index, 1);
   }
 
   private createToken(): string {
@@ -53,9 +65,8 @@ export class LinkGenerator {
     this.errorMessage = "";
     this.shareMessage = "";
 
-    const emailInput = (this.receiverEmail || this.getLatestReceiverInput()).trim();
-    this.receiverEmail = emailInput;
-    const emails = this.parseReceiverEmails(emailInput);
+    this.addReceiverEmailsFromInput();
+    const emails = this.receiverEmails;
 
     if (!emails.length) {
       this.errorMessage = "At least one receiver email is required.";
@@ -75,8 +86,8 @@ export class LinkGenerator {
     const token = this.createToken();
     this.generatedLink = `${origin}/feedback?t=${encodeURIComponent(token)}`;
 
-    if (typeof window !== "undefined" && window.localStorage) {
-      window.localStorage.setItem(`feedback-link:${token}`, JSON.stringify(emails));
+    if (typeof window !== "undefined" && window.sessionStorage) {
+      window.sessionStorage.setItem(`feedback-link:${token}`, JSON.stringify(emails));
     }
 
     this.isGeneratingLink = true;
@@ -98,6 +109,22 @@ export class LinkGenerator {
           this.isGeneratingLink = false;
         },
       });
+  }
+
+  onReceiverKeydown(event: KeyboardEvent) {
+    if (event.key === "Enter" || event.key === ",") {
+      event.preventDefault();
+      this.addReceiverEmailsFromInput();
+    }
+  }
+
+  onReceiverPaste(event: ClipboardEvent) {
+    const pastedText = event.clipboardData?.getData("text") || "";
+    if (pastedText.includes(",")) {
+      event.preventDefault();
+      this.receiverInput = `${this.receiverInput}${pastedText}`;
+      this.addReceiverEmailsFromInput();
+    }
   }
 
   openGeneratedLink() {

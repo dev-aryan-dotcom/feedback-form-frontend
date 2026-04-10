@@ -69,7 +69,7 @@ export class OnsiteFeedback {
 
       if (!this.receiverEmails.length && this.receiverToken && typeof window !== "undefined") {
         try {
-          const storedReceivers = window.localStorage.getItem(`feedback-link:${this.receiverToken}`);
+          const storedReceivers = window.sessionStorage.getItem(`feedback-link:${this.receiverToken}`);
           if (storedReceivers) {
             const parsedReceivers = JSON.parse(storedReceivers);
             if (Array.isArray(parsedReceivers)) {
