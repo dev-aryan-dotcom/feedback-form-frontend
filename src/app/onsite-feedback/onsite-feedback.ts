@@ -27,6 +27,7 @@ export class OnsiteFeedback {
   isSubmitted = false;
   isSubmitting = false;
   receiverEmails: string[] = [];
+  receiverToken = "";
 
   ratingOptions = [1, 2, 3, 4, 5];
 
@@ -57,13 +58,30 @@ export class OnsiteFeedback {
   ) {}
 
   ngOnInit(): void {
-    // Get receiver email from URL
+    // Get token or receiver list from URL
     this.route.queryParams.subscribe((params) => {
+      this.receiverToken = String(params["t"] || "").trim();
       const receiverParam = params["receiver"] || "";
       this.receiverEmails = String(receiverParam)
         .split(",")
         .map((email) => email.trim())
         .filter((email) => email.length > 0);
+
+      if (!this.receiverEmails.length && this.receiverToken && typeof window !== "undefined") {
+        try {
+          const storedReceivers = window.localStorage.getItem(`feedback-link:${this.receiverToken}`);
+          if (storedReceivers) {
+            const parsedReceivers = JSON.parse(storedReceivers);
+            if (Array.isArray(parsedReceivers)) {
+              this.receiverEmails = parsedReceivers
+                .map((email) => String(email).trim())
+                .filter((email) => email.length > 0);
+            }
+          }
+        } catch {
+          // Ignore malformed local storage data and fall back to token lookup.
+        }
+      }
     });
 
     const today = new Date().toISOString().split("T")[0];
@@ -116,7 +134,7 @@ export class OnsiteFeedback {
       return;
     }
 
-    if (!this.receiverEmails.length) {
+    if (!this.receiverToken && !this.receiverEmails.length) {
       this.errorMessage = "⚠️ No receiver email configured. Contact admin.";
       return;
     }
@@ -126,11 +144,25 @@ export class OnsiteFeedback {
 
     const formData = this.feedbackForm.value;
 
-    const payload = {
-      receiverEmail: this.receiverEmails,
+    const payload: {
+      token?: string;
+      receiverEmail?: string[];
+      clientEmail: string;
+      feedback: any;
+    } = {
       clientEmail: formData.clientEmail,
       feedback: formData,
     };
+
+    if (this.receiverToken) {
+      payload.token = this.receiverToken;
+    } else {
+      payload.receiverEmail = this.receiverEmails;
+    }
+
+    if (this.receiverEmails.length) {
+      payload.receiverEmail = this.receiverEmails;
+    }
 
     console.log("📤 Sending payload:", payload);
 

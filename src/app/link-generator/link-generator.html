@@ -5,6 +5,7 @@
 
     <label for="receiverEmail">Receiver Email(s)</label>
     <input
+      #receiverEmailInput
       id="receiverEmail"
       type="email"
       [(ngModel)]="receiverEmail"
@@ -12,7 +13,9 @@
     />
 
     <div class="actions">
-      <button type="button" (click)="generateLink()">Generate Link</button>
+      <button type="button" (click)="generateLink()" [disabled]="isGeneratingLink">
+        {{ isGeneratingLink ? 'Generating...' : 'Generate Link' }}
+      </button>
       <a class="open-form" href="/feedback" target="_blank" rel="noopener">Demo Form</a>
     </div>
 

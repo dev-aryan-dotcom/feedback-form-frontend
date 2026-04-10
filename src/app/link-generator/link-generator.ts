@@ -1,6 +1,8 @@
 import { CommonModule } from "@angular/common";
 import { Component } from "@angular/core";
 import { FormsModule } from "@angular/forms";
+import { HttpClient } from "@angular/common/http";
+import { environment } from "../../environments/environment";
 
 @Component({
   selector: "app-link-generator",
@@ -13,6 +15,9 @@ export class LinkGenerator {
   generatedLink = "";
   errorMessage = "";
   shareMessage = "";
+  isGeneratingLink = false;
+
+  constructor(private http: HttpClient) {}
 
   private isValidEmail(email: string): boolean {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -25,11 +30,31 @@ export class LinkGenerator {
       .filter((email) => email.length > 0);
   }
 
+  private getLatestReceiverInput(): string {
+    if (typeof document === "undefined") {
+      return "";
+    }
+
+    const input = document.getElementById("receiverEmail") as HTMLInputElement | null;
+    return input?.value?.trim() || "";
+  }
+
+  private createToken(): string {
+    if (typeof crypto !== "undefined" && crypto.randomUUID) {
+      return crypto.randomUUID().replace(/-/g, "");
+    }
+
+    const randomValues = new Uint8Array(24);
+    (typeof crypto !== "undefined" ? crypto : window.crypto).getRandomValues(randomValues);
+    return Array.from(randomValues, (value) => value.toString(16).padStart(2, "0")).join("");
+  }
+
   generateLink() {
     this.errorMessage = "";
     this.shareMessage = "";
 
-    const emailInput = this.receiverEmail.trim();
+    const emailInput = (this.receiverEmail || this.getLatestReceiverInput()).trim();
+    this.receiverEmail = emailInput;
     const emails = this.parseReceiverEmails(emailInput);
 
     if (!emails.length) {
@@ -47,8 +72,32 @@ export class LinkGenerator {
 
     const origin =
       typeof window !== "undefined" ? window.location.origin : "http://localhost:4200";
+    const token = this.createToken();
+    this.generatedLink = `${origin}/feedback?t=${encodeURIComponent(token)}`;
 
-    this.generatedLink = `${origin}/feedback?receiver=${encodeURIComponent(emails.join(","))}`;
+    if (typeof window !== "undefined" && window.localStorage) {
+      window.localStorage.setItem(`feedback-link:${token}`, JSON.stringify(emails));
+    }
+
+    this.isGeneratingLink = true;
+
+    this.http
+      .post<{ token: string }>(`${environment.apiUrl}/generate-feedback-link`, {
+        token,
+        receiverEmail: emails,
+      })
+      .subscribe({
+        next: (response) => {
+          this.generatedLink = `${origin}/feedback?t=${encodeURIComponent(response.token || token)}`;
+          this.errorMessage = "";
+          this.isGeneratingLink = false;
+        },
+        error: (err) => {
+          this.errorMessage =
+            err.error?.message || "Secure token generation failed.";
+          this.isGeneratingLink = false;
+        },
+      });
   }
 
   openGeneratedLink() {
