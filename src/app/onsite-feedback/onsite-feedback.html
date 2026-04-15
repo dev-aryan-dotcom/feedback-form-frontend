@@ -59,19 +59,6 @@
 
       <section class="section-block">
         <div class="section-title">Engagement ratings</div>
-        <div class="form-group">
-          <label>Overall performance at client location <span class="required-star">*</span></label>
-          <div class="rating-stars">
-            <div class="star-option" *ngFor="let star of [1,2,3,4,5]; let i = index">
-              <input type="radio" formControlName="overallRating" [value]="star" [id]="'star' + star">
-              <label [for]="'star' + star" class="star-label">★</label>
-              <span class="star-caption">
-                {{ star === 1 ? 'Poor' : star === 2 ? 'Fair' : star === 3 ? 'Good' : star === 4 ? 'Very Good' : 'Excellent' }}
-              </span>
-            </div>
-          </div>
-        </div>
-
         <div class="row-2col">
           <div class="form-group">
             <label>Collaboration & communication <span class="required-star">*</span></label>
@@ -96,40 +83,30 @@
         </div>
 
         <div class="form-group">
-          <label>Detailed ratings <span class="optional-badge">Optional</span> (1 = lowest, 5 = highest)</label>
+          <label>Detailed ratings <span class="required-star">*</span></label>
           <div class="rating-grid">
             <div class="rating-item" *ngFor="let item of ratingItems">
               <label>{{ item.label }}</label>
               <select [formControlName]="item.control">
-                <option value="" disabled>-- Select rating --</option>
-                <option *ngFor="let value of ratingOptions" [value]="value">{{ value }}</option>
+                <option [ngValue]="null" disabled>-- Select rating --</option>
+                <option *ngFor="let value of detailedRatingOptions" [value]="value">{{ value }}</option>
               </select>
             </div>
           </div>
         </div>
 
-        <div class="form-group">
-          <label>Technical competence <span class="optional-badge">Optional</span></label>
-          <div class="checkbox-group">
-            <label *ngFor="let tech of techOptions">
-              <input type="checkbox" [value]="tech.value" (change)="onTechChange($event)"> {{ tech.label }}
-            </label>
-          </div>
-        </div>
-
-        
       </section>
 
       <section class="section-block">
         <div class="section-title">Summary feedback</div>
         <div class="form-group">
-          <label>Additional comments <span class="optional-badge">Optional</span></label>
-          <textarea rows="4" formControlName="comments" placeholder="E.g., strong backend logic, effective client collaboration, clear documentation..."></textarea>
+          <label>Improvement suggestions <span class="required-star">*</span></label>
+          <textarea rows="2" formControlName="improvements" placeholder="Constructive feedback for better alignment at the client site"></textarea>
         </div>
 
         <div class="form-group">
-          <label>Improvement suggestions <span class="optional-badge">Optional</span></label>
-          <textarea rows="2" formControlName="improvements" placeholder="Constructive feedback for better alignment at the client site"></textarea>
+          <label>Additional comments <span class="required-star">*</span></label>
+          <textarea rows="4" formControlName="comments" placeholder="E.g., strong backend logic, effective client collaboration, clear documentation..."></textarea>
         </div>
       </section>
 

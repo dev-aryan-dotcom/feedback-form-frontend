@@ -5,8 +5,6 @@ import {
   FormBuilder,
   Validators,
   FormGroup,
-  FormArray,
-  FormControl,
 } from "@angular/forms";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -29,26 +27,16 @@ export class OnsiteFeedback {
   receiverEmails: string[] = [];
   receiverToken = "";
 
-  ratingOptions = [1, 2, 3, 4, 5];
+  detailedRatingOptions = [
+    "Needs Improvement",
+    "Meets Expectations",
+    "Exceeds Expectations",
+  ];
 
   ratingItems = [
     { label: "Technical Skills", control: "technicalSkillsRating" },
-    { label: "Communication", control: "communicationRating" },
-    { label: "Quality of Work", control: "qualityRating" },
-    { label: "Timeliness", control: "timelinessRating" },
     { label: "Problem Solving", control: "problemSolvingRating" },
-    { label: "Team Collaboration", control: "teamCollaborationRating" },
     { label: "Initiative & Ownership", control: "initiativeRating" },
-    { label: "Domain Understanding", control: "domainUnderstandingRating" },
-  ];
-
-  techOptions = [
-    { label: "☕ Java / Spring Boot", value: "Java / Spring Boot" },
-    { label: "⚛️ Frontend (React/Angular)", value: "React / Angular" },
-    { label: "📁 SharePoint Online", value: "SharePoint Online" },
-    { label: "🧩 SPFx", value: "SharePoint Framework SPFx" },
-    { label: "🔗 REST APIs", value: "REST APIs / Integration" },
-    { label: "🗄️ SQL / DB", value: "SQL / Database" },
   ];
 
   constructor(
@@ -93,34 +81,14 @@ export class OnsiteFeedback {
       clientSite: ["", Validators.required],
       role: ["", Validators.required],
       period: ["", Validators.required],
-      overallRating: ["", Validators.required],
-      techCheckGroup: this.fb.array([]),
       collabRating: ["", Validators.required],
       deliveryRating: ["", Validators.required],
-      technicalSkillsRating: [""],
-      communicationRating: [""],
-      qualityRating: [""],
-      timelinessRating: [""],
-      problemSolvingRating: [""],
-      teamCollaborationRating: [""],
-      initiativeRating: [""],
-      domainUnderstandingRating: [""],
-      comments: [""],
-      improvements: [""],
+      technicalSkillsRating: [null, Validators.required],
+      problemSolvingRating: [null, Validators.required],
+      initiativeRating: [null, Validators.required],
+      comments: ["", Validators.required],
+      improvements: ["", Validators.required],
     });
-  }
-
-  onTechChange(event: Event) {
-    const techArray = this.feedbackForm.get("techCheckGroup") as FormArray;
-    const isChecked = (event.target as HTMLInputElement).checked;
-    const value = (event.target as HTMLInputElement).value;
-
-    if (isChecked) {
-      techArray.push(new FormControl(value));
-    } else {
-      const index = techArray.controls.findIndex((x) => x.value === value);
-      if (index >= 0) techArray.removeAt(index);
-    }
   }
 
   onSubmit() {
@@ -193,10 +161,6 @@ export class OnsiteFeedback {
       doc.setFontSize(18);
       doc.text("Client Feedback Form - Response", 14, 20);
 
-      const techText = formData.techCheckGroup.length
-        ? formData.techCheckGroup.join(", ")
-        : "Not Provided";
-
       const displayValue = (value: any): string => {
         if (value === null || value === undefined) return "Not Provided";
         if (typeof value === "string") {
@@ -208,32 +172,18 @@ export class OnsiteFeedback {
 
       const pdfBodyRows: (string | number)[][] = [
         ["Employee Name", displayValue(formData.devName)],
+        ["Client Email", displayValue(formData.clientEmail)],
         ["Date of Feedback", displayValue(formData.feedbackDate)],
         ["Client Site", displayValue(formData.clientSite)],
         ["Role", displayValue(formData.role)],
         ["Period", displayValue(formData.period)],
-        [
-          "Overall Rating",
-          formData.overallRating
-            ? `${formData.overallRating} / 5`
-            : "Not Provided",
-        ],
         ["Collaboration", displayValue(formData.collabRating)],
         ["Delivery", displayValue(formData.deliveryRating)],
         ["Technical Skills", displayValue(formData.technicalSkillsRating)],
-        ["Communication", displayValue(formData.communicationRating)],
-        ["Quality of Work", displayValue(formData.qualityRating)],
-        ["Timeliness", displayValue(formData.timelinessRating)],
         ["Problem Solving", displayValue(formData.problemSolvingRating)],
-        ["Team Collaboration", displayValue(formData.teamCollaborationRating)],
         ["Initiative & Ownership", displayValue(formData.initiativeRating)],
-        [
-          "Domain Understanding",
-          displayValue(formData.domainUnderstandingRating),
-        ],
-        ["Tech Strengths", techText],
-        ["Comments", displayValue(formData.comments)],
         ["Improvements", displayValue(formData.improvements)],
+        ["Comments", displayValue(formData.comments)],
       ];
 
       autoTable(doc, {
@@ -255,8 +205,6 @@ export class OnsiteFeedback {
     // Reset form with date default
     const today = new Date().toISOString().split("T")[0];
     this.feedbackForm.reset({ feedbackDate: today });
-
-    (this.feedbackForm.get("techCheckGroup") as FormArray).clear();
     this.isSubmitting = false;
     this.feedbackForm.enable();
 
